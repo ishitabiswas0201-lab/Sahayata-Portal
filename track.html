@@ -24,16 +24,25 @@
 <main>
   <div class="card">
     <div class="section-title">Track Case Status</div>
-    <div class="section-sub">Enter your Case ID to view the current status of your complaint.</div>
+    <div class="section-sub">
+      Enter your Case ID to view the current status of your complaint.
+    </div>
+
     <div class="track-row">
-      <input type="text" id="trackCaseId" placeholder="e.g. NDRP-2026-104832">
+      <input
+        type="text"
+        id="trackCaseId"
+        placeholder="Enter Case ID (e.g. CASE-1718300000000)"
+      >
       <button class="btn" id="checkBtn">Check Status</button>
     </div>
+
     <div id="trackMsg"></div>
   </div>
 
   <div class="card" id="trackResult" style="display:none;">
     <div class="section-title">Case Details</div>
+
     <p><strong>Case ID:</strong> <span id="resCaseId"></span></p>
     <p><strong>Name:</strong> <span id="resName"></span></p>
     <p><strong>Type of Issue:</strong> <span id="resType"></span></p>
@@ -48,7 +57,7 @@
   National Distress Response Portal (MVP) — Powered by Firebase Firestore.
 </footer>
 
-<!-- Firebase SDK (compat / CDN version) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
