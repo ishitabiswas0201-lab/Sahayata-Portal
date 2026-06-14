@@ -1,52 +1,92 @@
-const tableBody = document.getElementById("dashboardBody");
-const msg = document.getElementById("dashboardMsg");
+const dashboardBody = document.getElementById('dashboardBody');
+const dashboardMsg = document.getElementById('dashboardMsg');
 
-// Load cases in real-time
-db.collection("cases")
-  .orderBy("timestamp", "desc")
-  .onSnapshot((snapshot) => {
-    tableBody.innerHTML = "";
+const STATUS_OPTIONS = ["received", "under review", "resolved"];
 
-    if (snapshot.empty) {
-      msg.innerHTML = "<p>No cases found.</p>";
-      return;
-    }
+function loadCases() {
+  dashboardMsg.innerHTML = '<p class="loading-text">Loading cases...</p>';
+  dashboardBody.innerHTML = '';
 
-    msg.innerHTML = "<p>Cases loaded successfully.</p>";
+  db.collection("cases")
+    .get()
+    .then(snapshot => {
 
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      const caseId = doc.id; // IMPORTANT: your tracking ID
+      if (snapshot.empty) {
+        dashboardMsg.innerHTML = '<p class="note">No cases found</p>';
+        return;
+      }
 
-      const row = document.createElement("tr");
+      dashboardMsg.innerHTML = '';
 
-      row.innerHTML = `
-        <td>${caseId}</td>
-        <td>${data.name || "-"}</td>
-        <td>${data.type || "-"}</td>
-        <td>${data.severity || "-"}</td>
-        <td>
-          <select onchange="updateStatus('${caseId}', this.value)">
-            <option value="Pending" ${data.status === "Pending" ? "selected" : ""}>Pending</option>
-            <option value="In Progress" ${data.status === "In Progress" ? "selected" : ""}>In Progress</option>
-            <option value="Resolved" ${data.status === "Resolved" ? "selected" : ""}>Resolved</option>
-          </select>
-        </td>
-      `;
+      const docs = [];
 
-      tableBody.appendChild(row);
+      snapshot.forEach(doc => {
+        docs.push({ id: doc.id, data: doc.data() });
+      });
+
+      // Sort manually (FIX for Date.now issue)
+      docs.sort((a, b) => (b.data.timestamp || 0) - (a.data.timestamp || 0));
+
+      docs.forEach(item => {
+        renderRow(item.id, item.data);
+      });
+
+    })
+    .catch(err => {
+      console.error("Load error:", err);
+      dashboardMsg.innerHTML =
+        '<p class="error-text">Failed to load cases. Check Firebase rules/config.</p>';
     });
-  });
+}
 
-// Update status function
-function updateStatus(caseId, status) {
-  db.collection("cases").doc(caseId).update({
-    status: status
-  })
-  .then(() => {
-    console.log("Updated:", caseId, status);
-  })
-  .catch((err) => {
-    console.error("Update failed:", err);
+function renderRow(docId, data) {
+  const severity = (data.severity || 'low').toLowerCase();
+  const status = (data.status || 'received').toLowerCase();
+  const isHigh = severity === 'high';
+
+  const tr = document.createElement('tr');
+  if (isHigh) tr.classList.add('urgent-row');
+
+  tr.innerHTML = `
+    <td>${data.caseId || docId}</td>
+    <td>${escapeHtml(data.name || '—')}</td>
+    <td>${escapeHtml(data.type || '—')}</td>
+    <td>${severity}</td>
+    <td>
+      <select data-id="${docId}">
+        ${STATUS_OPTIONS.map(opt =>
+          `<option value="${opt}" ${opt === status ? 'selected' : ''}>${opt}</option>`
+        ).join('')}
+      </select>
+    </td>
+  `;
+
+  dashboardBody.appendChild(tr);
+
+  const select = tr.querySelector('select');
+
+  select.addEventListener('change', async (e) => {
+    const newStatus = e.target.value;
+    select.disabled = true;
+
+    try {
+      await db.collection("cases").doc(docId).update({
+        status: newStatus
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Update failed");
+    } finally {
+      select.disabled = false;
+    }
   });
-              }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+loadCases();
