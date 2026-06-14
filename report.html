@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Complaint — National Distress Response Portal</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>National Distress Response Portal</h1>
+    <p>Confidential Government Support System — MVP</p>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="report.html" class="active">Report Complaint</a>
+    <a href="track.html">Track Case</a>
+    <a href="admin.html">Admin Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="card" id="reportFormCard">
+    <div class="section-title">Report a Distress Case</div>
+    <div class="section-sub">Please fill in the details below. All information is stored securely and kept confidential.</div>
+
+    <form id="distressForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your full name" required>
+
+      <label for="phone">Phone Number (optional)</label>
+      <input type="tel" id="phone" placeholder="Enter mobile number" pattern="[0-9]{10}" maxlength="10">
+
+      <label for="type">Type of Issue</label>
+      <select id="type" required>
+        <option value="">-- Select Issue Type --</option>
+        <option value="harassment">Harassment</option>
+        <option value="family distress">Family distress</option>
+        <option value="workplace issue">Workplace issue</option>
+        <option value="threat">Threat</option>
+        <option value="other">Other</option>
+      </select>
+
+      <label for="description">Description</label>
+      <textarea id="description" placeholder="Describe the incident in detail" required></textarea>
+
+      <label>Severity Level</label>
+      <div class="severity-group" id="severityGroup">
+        <div class="severity-option" data-value="low">Low</div>
+        <div class="severity-option" data-value="medium">Medium</div>
+        <div class="severity-option" data-value="high">High</div>
+      </div>
+
+      <div id="formError" class="error-text" style="display:none;"></div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn" id="submitBtn">Submit Complaint</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card success-box" id="successCard" style="display:none;">
+    <div class="check">&#10003;</div>
+    <h3>Complaint Submitted Successfully</h3>
+    <p>Your case has been registered in the system. Please save the Case ID below for tracking.</p>
+    <div class="case-id" id="generatedCaseId"></div>
+    <p class="note">You can check the status of your complaint anytime using "Track Case".</p>
+    <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="location.reload()">Submit Another Complaint</button>
+      <a class="btn" id="trackLink" href="track.html" style="text-decoration:none;display:inline-block;text-align:center;">Track This Case</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  National Distress Response Portal (MVP) — Powered by Firebase Firestore.
+</footer>
+
+<!-- Firebase SDK (compat / CDN version) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/report.js"></script>
+
+</body>
+</html>

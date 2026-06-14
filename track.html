@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Case — National Distress Response Portal</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>National Distress Response Portal</h1>
+    <p>Confidential Government Support System — MVP</p>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="report.html">Report Complaint</a>
+    <a href="track.html" class="active">Track Case</a>
+    <a href="admin.html">Admin Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="card">
+    <div class="section-title">Track Case Status</div>
+    <div class="section-sub">Enter your Case ID to view the current status of your complaint.</div>
+    <div class="track-row">
+      <input type="text" id="trackCaseId" placeholder="e.g. NDRP-2026-104832">
+      <button class="btn" id="checkBtn">Check Status</button>
+    </div>
+    <div id="trackMsg"></div>
+  </div>
+
+  <div class="card" id="trackResult" style="display:none;">
+    <div class="section-title">Case Details</div>
+    <p><strong>Case ID:</strong> <span id="resCaseId"></span></p>
+    <p><strong>Name:</strong> <span id="resName"></span></p>
+    <p><strong>Type of Issue:</strong> <span id="resType"></span></p>
+    <p><strong>Severity:</strong> <span id="resSeverity" class="status-badge"></span></p>
+    <p><strong>Current Status:</strong> <span id="resStatus" class="status-badge"></span></p>
+
+    <div class="timeline" id="resTimeline"></div>
+  </div>
+</main>
+
+<footer>
+  National Distress Response Portal (MVP) — Powered by Firebase Firestore.
+</footer>
+
+<!-- Firebase SDK (compat / CDN version) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/track.js"></script>
+
+</body>
+</html>
