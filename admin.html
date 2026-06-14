@@ -1,39 +1,69 @@
-const tableBody = document.getElementById("dashboardBody");
-const msg = document.getElementById("dashboardMsg");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — National Distress Response Portal</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-console.log("Admin JS loaded");
+<header>
+  <div class="brand">
+    <h1>National Distress Response Portal</h1>
+    <p>Confidential Government Support System — MVP</p>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="report.html">Report Complaint</a>
+    <a href="track.html">Track Case</a>
+    <a href="admin.html" class="active">Admin Dashboard</a>
+  </nav>
+</header>
 
-db.collection("cases")
-  .orderBy("timestamp", "desc")
-  .onSnapshot(
-    (snapshot) => {
-      tableBody.innerHTML = "";
+<main>
+  <div class="card">
+    <div class="section-title">Admin Dashboard</div>
+    <div class="section-sub">
+      All registered cases are listed below, most recent first. Cases marked
+      <span class="urgent-tag">URGENT REVIEW REQUIRED</span> have HIGH severity and are
+      highlighted for priority attention. Updating the status here updates the record
+      that citizens see on the Track Case page.
+    </div>
 
-      if (!snapshot.exists && snapshot.empty) {
-        msg.innerHTML = "<p>No cases found</p>";
-        return;
-      }
+    <div id="dashboardMsg"><p class="loading-text">Loading cases...</p></div>
 
-      msg.innerHTML = ""; // remove loading text
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Severity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dashboardBody"></tbody>
+      </table>
+    </div>
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
+    <p class="note">
+      Note: This dashboard has no authentication in this MVP. In a production deployment,
+      restrict access to this page using Firebase Authentication and Firestore security rules.
+    </p>
+  </div>
+</main>
 
-        const row = document.createElement("tr");
+<footer>
+  National Distress Response Portal (MVP) — Powered by Firebase Firestore.
+</footer>
 
-        row.innerHTML = `
-          <td>${doc.id}</td>
-          <td>${data.name || "-"}</td>
-          <td>${data.type || "-"}</td>
-          <td>${data.severity || "-"}</td>
-          <td>${data.status || "Pending"}</td>
-        `;
+<!-- Firebase SDK (compat / CDN version) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/admin.js"></script>
 
-        tableBody.appendChild(row);
-      });
-    },
-    (error) => {
-      console.error("Firestore error:", error);
-      msg.innerHTML = "<p style='color:red'>Failed to load cases</p>";
-    }
-  );
+</body>
+</html>
