@@ -1,58 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Track Case — National Distress Response Portal</title>
-<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+const checkBtn = document.getElementById("checkBtn");
 
-<header>
-  <div class="brand">
-    <h1>National Distress Response Portal</h1>
-    <p>Confidential Government Support System — MVP</p>
-  </div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="report.html">Report Complaint</a>
-    <a href="track.html" class="active">Track Case</a>
-    <a href="admin.html">Admin Dashboard</a>
-  </nav>
-</header>
+const trackMsg = document.getElementById("trackMsg");
+const resultBox = document.getElementById("trackResult");
 
-<main>
-  <div class="card">
-    <div class="section-title">Track Case Status</div>
-    <div class="section-sub">Enter your Case ID to view the current status of your complaint.</div>
-    <div class="track-row">
-      <input type="text" id="trackCaseId" placeholder="e.g. NDRP-2026-104832">
-      <button class="btn" id="checkBtn">Check Status</button>
-    </div>
-    <div id="trackMsg"></div>
-  </div>
+checkBtn.addEventListener("click", async () => {
+  const caseId = document.getElementById("trackCaseId").value.trim();
 
-  <div class="card" id="trackResult" style="display:none;">
-    <div class="section-title">Case Details</div>
-    <p><strong>Case ID:</strong> <span id="resCaseId"></span></p>
-    <p><strong>Name:</strong> <span id="resName"></span></p>
-    <p><strong>Type of Issue:</strong> <span id="resType"></span></p>
-    <p><strong>Severity:</strong> <span id="resSeverity" class="status-badge"></span></p>
-    <p><strong>Current Status:</strong> <span id="resStatus" class="status-badge"></span></p>
+  if (!caseId) {
+    trackMsg.innerHTML = "<p style='color:red'>Please enter Case ID</p>";
+    return;
+  }
 
-    <div class="timeline" id="resTimeline"></div>
-  </div>
-</main>
+  trackMsg.innerHTML = "Searching...";
 
-<footer>
-  National Distress Response Portal (MVP) — Powered by Firebase Firestore.
-</footer>
+  try {
+    const docRef = db.collection("cases").doc(caseId);
+    const docSnap = await docRef.get();
 
-<!-- Firebase SDK (compat / CDN version) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/track.js"></script>
+    if (!docSnap.exists) {
+      trackMsg.innerHTML = "<p style='color:red'>Case not found</p>";
+      resultBox.style.display = "none";
+      return;
+    }
 
-</body>
-</html>
+    const data = docSnap.data();
+
+    document.getElementById("resCaseId").innerText = data.caseId;
+    document.getElementById("resName").innerText = data.name || "-";
+    document.getElementById("resType").innerText = data.type || "-";
+    document.getElementById("resSeverity").innerText = data.severity || "-";
+    document.getElementById("resStatus").innerText = data.status || "Pending";
+
+    trackMsg.innerHTML = "";
+
+    resultBox.style.display = "block";
+
+  } catch (err) {
+    console.error(err);
+    trackMsg.innerHTML = "<p style='color:red'>Error fetching case</p>";
+  }
+});
