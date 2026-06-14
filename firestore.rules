@@ -1,0 +1,53 @@
+// ============================================================
+// firestore.rules
+// Suggested Firestore security rules for this MVP.
+//
+// HOW TO APPLY:
+// In the Firebase Console, go to:
+//   Firestore Database > Rules
+// and paste this content, then click "Publish".
+//
+// NOTE ON THIS MVP:
+// - Anyone can create a new case (citizens submitting complaints
+//   do not need to log in).
+// - Anyone can read/update cases, which is what allows the
+//   Track Case page and Admin Dashboard to work WITHOUT
+//   authentication for this prototype.
+//
+// FOR A REAL DEPLOYMENT:
+// - Restrict "update" (status changes) to authenticated admin
+//   users only, e.g. using Firebase Authentication + a custom
+//   claim or an "admins" collection.
+// - Restrict "list"/"read" on the admin dashboard to admins only,
+//   and instead give citizens a way to query only their own case
+//   (e.g. by requiring the exact caseId, which acts like a secret
+//   token, and disabling collection-wide listing for non-admins).
+// ============================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /cases/{caseId} {
+
+      // Anyone can create a new complaint (citizen submission)
+      allow create: if true;
+
+      // Anyone with the exact Case ID can read that single case
+      // (used by the Track Case page)
+      allow get: if true;
+
+      // Allow listing all cases (used by the Admin Dashboard).
+      // !! For production, restrict this to authenticated admins. !!
+      allow list: if true;
+
+      // Allow status updates (used by the Admin Dashboard).
+      // !! For production, restrict this to authenticated admins. !!
+      allow update: if true;
+
+      // No one can delete cases via the client
+      allow delete: if false;
+    }
+  }
+}
