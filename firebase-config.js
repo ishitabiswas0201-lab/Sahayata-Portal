@@ -8,5 +8,7 @@ const firebaseConfig = {
   measurementId: "G-QTFDG3F149"
 };
 
+// INIT
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+console.log("Firebase connected:", firebase.apps.length > 0);
